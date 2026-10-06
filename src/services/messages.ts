@@ -1,14 +1,13 @@
 import { apiClient } from "../lib/apiClient"
-import type { Message, PaginatedResponse, SendMessageRequest } from "../types/api.types"
+import type { MessageDto } from "../types/api.types"
 
-export const messagesService = {
-  list: async (conversationId: string): Promise<PaginatedResponse<Message>> => {
-    const { data } = await apiClient.get(`/api/conversations/${conversationId}/messages`)
-    return data
-  },
-
-  send: async (conversationId: string, body: SendMessageRequest): Promise<Message> => {
-    const { data } = await apiClient.post(`/api/conversations/${conversationId}/messages`, body)
-    return data
-  },
+export async function sendMessage(
+  conversationId: string,
+  content: string
+): Promise<MessageDto> {
+  const res = await apiClient.post<MessageDto>(
+    `/api/conversations/${conversationId}/messages`,
+    { content }
+  )
+  return res.data
 }

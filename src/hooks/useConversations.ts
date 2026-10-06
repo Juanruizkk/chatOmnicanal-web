@@ -1,18 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { conversationsService } from "../services/conversations"
+import {
+  getConversations,
+  getConversation,
+  takeControl,
+  resolveConversation,
+  reopenConversation,
+} from "../services/conversations"
 import type { ConversationsFilters } from "../types/api.types"
 
 export function useConversations(filters?: ConversationsFilters) {
   return useQuery({
     queryKey: ["conversations", filters],
-    queryFn: () => conversationsService.list(filters),
+    queryFn: () => getConversations(filters),
   })
 }
 
 export function useConversation(id: string) {
   return useQuery({
-    queryKey: ["conversations", id],
-    queryFn: () => conversationsService.getById(id),
+    queryKey: ["conversation", id],
+    queryFn: () => getConversation(id),
     enabled: !!id,
   })
 }
@@ -20,9 +26,9 @@ export function useConversation(id: string) {
 export function useTakeControl(conversationId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => conversationsService.takeControl(conversationId),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(["conversations", conversationId], updated)
+    mutationFn: (agentUserId?: string) => takeControl(conversationId, agentUserId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversation", conversationId] })
       queryClient.invalidateQueries({ queryKey: ["conversations"] })
     },
   })
@@ -31,9 +37,20 @@ export function useTakeControl(conversationId: string) {
 export function useResolve(conversationId: string) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => conversationsService.resolve(conversationId),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(["conversations", conversationId], updated)
+    mutationFn: () => resolveConversation(conversationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversation", conversationId] })
+      queryClient.invalidateQueries({ queryKey: ["conversations"] })
+    },
+  })
+}
+
+export function useReopen(conversationId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => reopenConversation(conversationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversation", conversationId] })
       queryClient.invalidateQueries({ queryKey: ["conversations"] })
     },
   })

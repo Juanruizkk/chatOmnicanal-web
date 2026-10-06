@@ -1,14 +1,12 @@
 import { apiClient } from "../lib/apiClient"
 import type { TenantProfile } from "../types/api.types"
 
-export const tenantProfileService = {
-  get: async (): Promise<TenantProfile> => {
-    const { data } = await apiClient.get("/api/tenant-profile")
-    return data
-  },
+export async function getTenantProfile(): Promise<TenantProfile | null> {
+  const res = await apiClient.get<TenantProfile>("/api/tenant-profile")
+  return res.data
+}
 
-  update: async (body: Partial<TenantProfile>): Promise<TenantProfile> => {
-    const { data } = await apiClient.put("/api/tenant-profile", body)
-    return data
-  },
+export async function updateTenantProfile(data: TenantProfile): Promise<TenantProfile> {
+  const res = await apiClient.put<TenantProfile>("/api/tenant-profile", data)
+  return res.data
 }
