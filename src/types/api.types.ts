@@ -91,6 +91,26 @@ export interface AgentMembership {
   user: { id: string; email: string; name: string }
 }
 
+export interface PendingInvitation {
+  id: string
+  email: string
+  role: UserRole
+  createdAt: string
+}
+
+export interface TenantDto {
+  id: string
+  name: string
+  plan: string
+  status: string
+}
+
+export interface MeDto {
+  user: { id: string; email: string; name: string }
+  tenant: TenantDto | null
+  role: UserRole | null
+}
+
 export interface ConversationsFilters {
   channelType?: ChannelType
   status?: ConversationStatus
@@ -122,3 +142,46 @@ export interface BotSimulateResponse {
   outputTokens: number
   retrievedChunks: KnowledgeChunk[]
 }
+
+export interface ChannelItemDto {
+  id: string
+  tenantId: string
+  type: ChannelType
+  status: "Active" | "Inactive" | "Error"
+  phoneNumberId: string | null
+  wabaId: string | null
+  igUserId: string | null
+  pageId: string | null
+  hasAccessToken: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface WebhookInfo {
+  whatsAppCallbackUrl: string
+  instagramCallbackUrl: string
+  messengerCallbackUrl: string
+  verifyToken: string
+}
+
+export interface ChannelsOverviewResponse {
+  channels: ChannelItemDto[]
+  webhookInfo: WebhookInfo
+}
+
+export interface ConnectWhatsAppPayload {
+  phoneNumberId: string
+  wabaId?: string
+  accessToken: string
+}
+
+export interface ConnectInstagramPayload {
+  igUserId: string
+  accessToken: string
+}
+
+export interface ConnectMessengerPayload {
+  pageId: string
+  accessToken: string
+}
+

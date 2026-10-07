@@ -14,7 +14,7 @@ export function InviteAgentModal() {
   const [email, setEmail] = useState("")
   const queryClient = useQueryClient()
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending, isError, reset } = useMutation({
     mutationFn: (e: string) => agentsService.invite(e),
     onSuccess: () => {
       setOpen(false)
@@ -24,7 +24,7 @@ export function InviteAgentModal() {
   })
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset() }}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <UserPlus className="h-4 w-4 mr-2" />
@@ -46,6 +46,9 @@ export function InviteAgentModal() {
               onKeyDown={e => e.key === "Enter" && mutate(email)}
             />
           </div>
+          {isError && (
+            <p className="text-sm text-destructive">No se pudo enviar la invitación. Revisá el email e intentá de nuevo.</p>
+          )}
           <Button
             className="w-full"
             onClick={() => mutate(email)}

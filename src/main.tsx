@@ -17,7 +17,14 @@ const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-      <ClerkProvider publishableKey={clerkKey}>
+      <ClerkProvider
+        publishableKey={clerkKey}
+        signInUrl="/sign-in"
+        signUpUrl="/sign-up"
+        afterSignOutUrl="/sign-in"
+        signInFallbackRedirectUrl="/"
+        signUpFallbackRedirectUrl="/"
+      >
         <QueryClientProvider client={queryClient}>
           <App />
         </QueryClientProvider>

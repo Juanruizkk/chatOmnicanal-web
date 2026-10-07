@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react"
 import { useBotSimulation } from "../../hooks/useBotSimulation"
+import { useMe } from "../../hooks/useMe"
 import { Button } from "../ui/button"
 import { Textarea } from "../ui/textarea"
 import { Send, Bot, Sparkles, AlertCircle, Database, ChevronDown, ChevronUp, RotateCcw } from "lucide-react"
@@ -18,6 +19,7 @@ interface SimMessage {
 }
 
 export function BotSimulationChat() {
+  const { data: me } = useMe()
   const [messages, setMessages] = useState<SimMessage[]>([])
   const [input, setInput] = useState("")
   const [expandedChunksMessageId, setExpandedChunksMessageId] = useState<string | null>(null)
@@ -69,6 +71,11 @@ export function BotSimulationChat() {
       }
 
       setMessages((prev) => [...prev, botMsg])
+
+      // Mark simulation step as completed for onboarding
+      const tenantId = me?.tenant?.id || "default"
+      localStorage.setItem(`bot_simulated_${tenantId}`, "true")
+      window.dispatchEvent(new Event("bot-simulated"))
     } catch {
       setMessages((prev) => [
         ...prev,

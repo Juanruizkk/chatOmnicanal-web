@@ -5,7 +5,8 @@ import type {
   MessageDto,
   TenantProfile,
   KnowledgeDoc,
-  AgentMembership,
+  MeDto,
+  PendingInvitation,
   BotSimulateRequest,
   BotSimulateResponse,
 } from "../types/api.types"
@@ -204,20 +205,19 @@ const knowledgeDocs: KnowledgeDoc[] = [
   },
 ]
 
-const agents: AgentMembership[] = [
-  {
-    id: "mem-1",
-    userId: "user-1",
-    role: "Owner",
-    user: { id: "user-1", email: "juan@tienda.com", name: "Juan Ruiz" },
-  },
-  {
-    id: "mem-2",
-    userId: "user-2",
-    role: "Agent",
-    user: { id: "user-2", email: "sofia@tienda.com", name: "Sofía Martínez" },
-  },
+// Forma de MembershipDto de la API
+const agents = [
+  { id: "mem-1", userId: "user-1", userEmail: "juan@tienda.com", userName: "Juan Ruiz", role: "Owner" },
+  { id: "mem-2", userId: "user-2", userEmail: "sofia@tienda.com", userName: "Sofía Martínez", role: "Agent" },
 ]
+
+const invitations: PendingInvitation[] = []
+
+const me: MeDto = {
+  user: { id: "user-1", email: "juan@tienda.com", name: "Juan Ruiz" },
+  tenant: { id: "tenant-1", name: "Tienda Demo", plan: "Basic", status: "Active" },
+  role: "Owner",
+}
 
 export const handlers = [
   http.get("/api/conversations", ({ request }) => {
@@ -357,9 +357,27 @@ export const handlers = [
     return new HttpResponse(null, { status: 204 })
   }),
 
-  http.get("/api/agents", () => HttpResponse.json(agents)),
-  http.post("/api/agents/invite", () => new HttpResponse(null, { status: 204 })),
-  http.delete("/api/agents/:id", ({ params }) => {
+  http.get("/api/me", () => HttpResponse.json(me)),
+  http.post("/api/tenants", async ({ request }) => {
+    const body = (await request.json()) as { name: string }
+    me.tenant = { id: "tenant-1", name: body.name, plan: "Basic", status: "Active" }
+    me.role = "Owner"
+    return HttpResponse.json(me.tenant, { status: 201 })
+  }),
+
+  http.get("/api/memberships", () => HttpResponse.json(agents)),
+  http.get("/api/memberships/invitations", () => HttpResponse.json(invitations)),
+  http.post("/api/memberships/invite", async ({ request }) => {
+    const body = (await request.json()) as { email: string }
+    invitations.push({ id: `inv-${Date.now()}`, email: body.email, role: "Agent", createdAt: new Date().toISOString() })
+    return new HttpResponse(null, { status: 204 })
+  }),
+  http.delete("/api/memberships/invitations/:id", ({ params }) => {
+    const idx = invitations.findIndex((i) => i.id === params.id)
+    if (idx !== -1) invitations.splice(idx, 1)
+    return new HttpResponse(null, { status: 204 })
+  }),
+  http.delete("/api/memberships/:id", ({ params }) => {
     const idx = agents.findIndex((a) => a.id === params.id)
     if (idx !== -1) agents.splice(idx, 1)
     return new HttpResponse(null, { status: 204 })
