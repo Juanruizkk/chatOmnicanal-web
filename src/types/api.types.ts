@@ -185,3 +185,124 @@ export interface ConnectMessengerPayload {
   accessToken: string
 }
 
+// ── Admin ──────────────────────────────────────────────────────────────────
+
+export interface TenantAdminDto {
+  id: string
+  name: string
+  plan: string
+  status: string
+  conversationQuota: number | null
+  activeChannels: number
+  conversationsLast30Days: number
+  tokensLast30Days: number
+  estimatedCostUsd: number
+  totalPaidUsd: number
+  hasOverduePayment: boolean
+  isNearQuota: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TenantKpiDto {
+  totalTenants: number
+  activeTenants: number
+  suspendedTenants: number
+  tenantsWithAlerts: number
+  totalTokensLast30Days: number
+  totalEstimatedCostUsd: number
+  totalCollectedUsd: number
+}
+
+export interface TenantStatsDto {
+  conversationsLast30Days: number
+  conversationsAllTime: number
+  messagesLast30Days: number
+  messagesAllTime: number
+  inputTokensLast30Days: number
+  outputTokensLast30Days: number
+  estimatedCostUsdLast30Days: number
+  estimatedCostUsdAllTime: number
+  activeChannels: number
+  dailyConversations: { date: string; count: number }[]
+}
+
+export interface PaymentDto {
+  id: string
+  tenantId: string
+  amount: number
+  currency: string
+  status: string
+  description: string | null
+  externalReference: string | null
+  periodStart: string
+  periodEnd: string
+  registeredByUserId: string
+  createdAt: string
+}
+
+export interface BillingInfoDto {
+  id: string | null
+  companyName: string | null
+  taxId: string | null
+  billingEmail: string | null
+  address: string | null
+  country: string | null
+  notes: string | null
+}
+
+export interface LlmPricingDto {
+  id: string
+  modelId: string
+  displayName: string
+  inputPricePerMillionTokens: number
+  outputPricePerMillionTokens: number
+  isActive: boolean
+  updatedAt: string
+}
+
+export interface AuditLogEntryDto {
+  id: string
+  tenantId: string | null
+  tenantName: string | null
+  adminUserId: string
+  action: string
+  details: string | null
+  ipAddress: string | null
+  createdAt: string
+}
+
+export interface UpdateTenantConfigRequest {
+  plan: string
+  status: string
+  conversationQuota: number | null
+  internalNotes: string | null
+}
+
+export interface RegisterPaymentRequest {
+  amount: number
+  currency: string
+  status: string
+  description: string | null
+  externalReference: string | null
+  periodStart: string
+  periodEnd: string
+}
+
+export interface AdminTenantsFilters {
+  search?: string
+  status?: string
+  plan?: string
+  page?: number
+  pageSize?: number
+}
+
+export interface PagedResult<T> {
+  items: T[]
+  totalCount: number
+  page: number
+  pageSize: number
+  totalPages: number
+  hasNextPage: boolean
+}
+
