@@ -3,6 +3,7 @@ import { SignIn, SignUp } from "@clerk/clerk-react"
 import { ProtectedRoute, TenantRoute } from "./components/layout/ProtectedRoute"
 import { AppLayout } from "./components/layout/AppLayout"
 import { AuthLayout } from "./components/layout/AuthLayout"
+import { AdminLayout } from "./components/layout/AdminLayout"
 import { ConversationsPage } from "./pages/ConversationsPage"
 import { ChatPage } from "./pages/ChatPage"
 import { SettingsProfilePage } from "./pages/SettingsProfilePage"
@@ -11,6 +12,10 @@ import { SettingsAgentsPage } from "./pages/SettingsAgentsPage"
 import { SettingsChannelsPage } from "./pages/SettingsChannelsPage"
 import { SimulationPage } from "./pages/SimulationPage"
 import { OnboardingPage } from "./pages/OnboardingPage"
+import { AdminTenantsPage } from "./pages/AdminTenantsPage"
+import { AdminTenantDetailPage } from "./pages/AdminTenantDetailPage"
+import { AdminSettingsPage } from "./pages/AdminSettingsPage"
+import { AdminAuditLogPage } from "./pages/AdminAuditLogPage"
 
 export const router = createBrowserRouter([
   {
@@ -48,6 +53,15 @@ export const router = createBrowserRouter([
           },
         ],
       },
+    ],
+  },
+  {
+    element: <AdminLayout />,
+    children: [
+      { path: "admin", element: <AdminTenantsPage /> },
+      { path: "admin/tenants/:id", element: <AdminTenantDetailPage /> },
+      { path: "admin/settings", element: <AdminSettingsPage /> },
+      { path: "admin/audit-log", element: <AdminAuditLogPage /> },
     ],
   },
 ])
