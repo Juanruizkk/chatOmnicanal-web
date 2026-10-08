@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/clerk-react"
+import { useAuth, useUser } from "@clerk/clerk-react"
 import { Navigate, Outlet } from "react-router-dom"
 import { setAuthTokenGetter } from "../../lib/apiClient"
 import { useMe } from "../../hooks/useMe"
@@ -25,8 +25,10 @@ export function ProtectedRoute() {
   return <Outlet />
 }
 
-/** Exige que el usuario pertenezca a un tenant; si no, lo manda al onboarding. */
+/** Exige que el usuario pertenezca a un tenant; si no, lo manda al onboarding.
+ *  Los superadmins son redirigidos al panel de admin ya que no tienen tenant. */
 export function TenantRoute() {
+  const { user } = useUser()
   const { data: me, isLoading, isError } = useMe()
 
   if (isLoading) return <FullScreenSpinner />
@@ -36,6 +38,8 @@ export function TenantRoute() {
       No se pudo conectar con el servidor. Reintentá en unos segundos.
     </div>
   )
+
+  if (user?.publicMetadata?.role === "superadmin") return <Navigate to="/admin" replace />
 
   if (!me?.tenant) return <Navigate to="/onboarding" replace />
 

@@ -1,16 +1,18 @@
 // src/components/layout/AdminLayout.tsx
 import { Navigate, NavLink, Outlet } from "react-router-dom"
-import { useUser } from "@clerk/clerk-react"
+import { useClerk, useUser } from "@clerk/clerk-react"
 
 function AdminGuard({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser()
   if (!isLoaded) return null
   const role = user?.publicMetadata?.role as string | undefined
-  if (role !== "superadmin") return <Navigate to="/conversations" replace />
+  if (role !== "superadmin") return <Navigate to="/sign-in" replace />
   return <>{children}</>
 }
 
 export function AdminLayout() {
+  const { signOut } = useClerk()
+
   return (
     <AdminGuard>
       <div className="flex h-screen overflow-hidden bg-background text-foreground">
@@ -28,12 +30,12 @@ export function AdminLayout() {
             <AdminNavLink to="/admin/audit-log">Audit Log</AdminNavLink>
           </nav>
           <div className="p-3 border-t border-border">
-            <NavLink
-              to="/conversations"
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-accent transition-colors"
+            <button
+              onClick={() => signOut({ redirectUrl: "/sign-in" })}
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-accent transition-colors w-full text-left"
             >
-              ← Volver al panel
-            </NavLink>
+              Cerrar sesión
+            </button>
           </div>
         </aside>
         <main className="flex flex-1 overflow-hidden">
